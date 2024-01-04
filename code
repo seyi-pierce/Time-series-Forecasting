@@ -1,0 +1,47 @@
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+
+# Load your large CSV dataset
+# Replace 'your_dataset.csv' with the path to your CSV file
+df = pd.read_csv('your_dataset.csv')
+
+# Ensure the date column is in datetime format (modify 'date_column' accordingly)
+df['date_column'] = pd.to_datetime(df['date_column'])
+
+# Set the date column as the DataFrame index
+df.set_index('date_column', inplace=True)
+
+# Visualize the time series data
+plt.figure(figsize=(12, 6))
+plt.plot(df['your_variable'], label='Your Variable')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.legend()
+plt.title('Time Series Data')
+plt.show()
+
+# Split the data into training and testing sets
+train_size = int(len(df) * 0.8)
+train_data, test_data = df[:train_size], df[train_size:]
+
+# Fit the ARIMA model (adjust order as needed)
+model = ARIMA(train_data['your_variable'], order=(1, 1, 1))
+model_fit = model.fit()
+
+# Forecast future values
+forecast_periods = len(test_data)
+forecast, stderr, conf_int = model_fit.forecast(steps=forecast_periods)
+
+# Visualize the forecast
+plt.figure(figsize=(12, 6))
+plt.plot(train_data['your_variable'], label='Training Data')
+plt.plot(test_data['your_variable'], label='Test Data')
+plt.plot(test_data.index, forecast, label='ARIMA Forecast', color='red')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.legend()
+plt.title('Time Series Forecast - ARIMA Model')
+plt.show()
